@@ -14,6 +14,7 @@
 	let toastShow = $state(false);
 	let toastMessage = $state('');
 	let toastType = $state<'success' | 'error' | 'info'>('info');
+	let activeTab = $state<'settings' | 'fields' | 'share'>('settings');
 
 	function showToast(message: string, type: 'success' | 'error' | 'info' = 'info') {
 		toastMessage = message;
@@ -195,34 +196,34 @@
 <div class="min-h-screen bg-white">
 	<!-- Header -->
 	<header class="bg-white border-b-2 border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-		<div class="container mx-auto px-4 py-4">
-			<div class="flex items-center justify-between">
-				<div class="flex items-center gap-4">
-					<a href="/dashboard" class="flex items-center gap-3 group">
-						<img src="/Logo (1).png" alt="LidForm" class="w-8 h-8 transition-transform group-hover:scale-105" />
-						<span class="text-xl font-bold text-gray-900">LidForm</span>
+		<div class="container mx-auto px-4 py-3 md:py-4">
+			<div class="flex items-center justify-between flex-wrap gap-3">
+				<div class="flex items-center gap-2 md:gap-4">
+					<a href="/dashboard" class="flex items-center gap-2 group">
+						<img src="/Logo (1).png" alt="LidForm" class="w-7 h-7 md:w-8 md:h-8 transition-transform group-hover:scale-105" />
+						<span class="text-lg md:text-xl font-bold text-gray-900">LidForm</span>
 					</a>
-					<a href="/dashboard" class="text-gray-600 hover:text-black font-semibold transition-colors flex items-center gap-2">
-						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<a href="/dashboard" class="text-gray-600 hover:text-black text-sm md:text-base font-semibold transition-colors flex items-center gap-1">
+						<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
 						</svg>
-						Back
+						<span class="hidden sm:inline">Back</span>
 					</a>
 				</div>
-				<div class="flex items-center gap-3">
+				<div class="flex items-center gap-2">
 					<a
 						href="/f/{$page.params.id}"
 						target="_blank"
-						class="px-5 py-2.5 border-2 border-gray-900 text-gray-900 font-semibold rounded-xl hover:bg-gray-900 hover:text-white transition-all"
+						class="px-3 py-2 md:px-5 md:py-2.5 border-2 border-gray-900 text-gray-900 text-sm md:text-base font-semibold rounded-xl hover:bg-gray-900 hover:text-white transition-all"
 					>
 						Preview
 					</a>
 					<button
 						onclick={saveForm}
 						disabled={saving}
-						class="px-8 py-2.5 bg-black text-white font-bold rounded-xl hover:bg-gray-800 disabled:opacity-50 transition-all hover:-translate-y-0.5 shadow-lg"
+						class="px-4 md:px-8 py-2 md:py-2.5 bg-black text-white text-sm md:text-base font-bold rounded-xl hover:bg-gray-800 disabled:opacity-50 transition-all hover:-translate-y-0.5 shadow-lg"
 					>
-						{saving ? 'Saving...' : 'Save Form'}
+						{saving ? 'Saving...' : 'Save'}
 					</button>
 				</div>
 			</div>
@@ -235,10 +236,50 @@
 			<p class="text-gray-600 mt-6 text-lg">Loading form...</p>
 		</div>
 	{:else if form}
-		<main class="container mx-auto px-4 py-12 max-w-5xl">
+		<main class="container mx-auto px-4 py-6 md:py-12 max-w-5xl">
+			<!-- Tabs Navigation -->
+			<div class="bg-white rounded-2xl md:rounded-3xl border-2 border-gray-200 p-1.5 md:p-2 mb-4 md:mb-6 flex gap-1 md:gap-2 animate-fade-in overflow-x-auto">
+				<button
+					onclick={() => activeTab = 'settings'}
+					class="flex-1 min-w-[100px] px-3 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-lg transition-all {activeTab === 'settings' ? 'bg-black text-white shadow-lg' : 'bg-transparent text-gray-600 hover:bg-gray-100'}"
+				>
+					<div class="flex items-center justify-center gap-1.5 md:gap-2">
+						<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+						</svg>
+						<span class="whitespace-nowrap">Settings</span>
+					</div>
+				</button>
+				<button
+					onclick={() => activeTab = 'fields'}
+					class="flex-1 min-w-[100px] px-3 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-lg transition-all {activeTab === 'fields' ? 'bg-black text-white shadow-lg' : 'bg-transparent text-gray-600 hover:bg-gray-100'}"
+				>
+					<div class="flex items-center justify-center gap-1.5 md:gap-2">
+						<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+						</svg>
+						<span class="whitespace-nowrap">Fields</span>
+					</div>
+				</button>
+				<button
+					onclick={() => activeTab = 'share'}
+					class="flex-1 min-w-[100px] px-3 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-lg transition-all {activeTab === 'share' ? 'bg-black text-white shadow-lg' : 'bg-transparent text-gray-600 hover:bg-gray-100'}"
+				>
+					<div class="flex items-center justify-center gap-1.5 md:gap-2">
+						<svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+						</svg>
+						<span class="whitespace-nowrap">Share</span>
+					</div>
+				</button>
+			</div>
+
+			<!-- Tab Content -->
+			{#if activeTab === 'settings'}
 			<!-- Form Settings -->
-			<div class="bg-white rounded-3xl border-2 border-gray-200 p-10 mb-6 animate-fade-in">
-				<h2 class="text-3xl font-bold text-gray-900 mb-8">Form Settings</h2>
+			<div class="bg-white rounded-2xl md:rounded-3xl border-2 border-gray-200 p-6 md:p-10 animate-fade-in">
+				<h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Form Settings</h2>
 
 				<div class="space-y-6">
 					<div>
@@ -293,14 +334,16 @@
 					</div>
 				</div>
 			</div>
+			{/if}
 
+			{#if activeTab === 'fields'}
 			<!-- Form Fields -->
-			<div class="bg-white rounded-3xl border-2 border-gray-200 p-10 mb-6 animate-fade-in" style="animation-delay: 0.1s;">
-				<div class="flex items-center justify-between mb-8">
-					<h2 class="text-3xl font-bold text-gray-900">Form Fields</h2>
+			<div class="bg-white rounded-2xl md:rounded-3xl border-2 border-gray-200 p-6 md:p-10 animate-fade-in">
+				<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
+					<h2 class="text-2xl md:text-3xl font-bold text-gray-900">Form Fields</h2>
 					<button
 						onclick={addField}
-						class="px-6 py-3 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-all hover:-translate-y-0.5 shadow-lg flex items-center gap-2"
+						class="w-full sm:w-auto px-4 md:px-6 py-2.5 md:py-3 bg-black text-white text-sm md:text-base font-semibold rounded-xl hover:bg-gray-800 transition-all hover:-translate-y-0.5 shadow-lg flex items-center justify-center gap-2"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -446,10 +489,12 @@
 					</div>
 				{/if}
 			</div>
+			{/if}
 
+			{#if activeTab === 'share'}
 			<!-- Share Section -->
-			<div class="bg-white rounded-3xl border-2 border-gray-200 p-10 animate-fade-in" style="animation-delay: 0.2s;">
-				<h2 class="text-3xl font-bold text-gray-900 mb-8">Share Your Form</h2>
+			<div class="bg-white rounded-2xl md:rounded-3xl border-2 border-gray-200 p-6 md:p-10 animate-fade-in">
+				<h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Share Your Form</h2>
 				
 				<div class="space-y-6">
 					<div>
@@ -487,6 +532,7 @@
 					</div>
 				</div>
 			</div>
+			{/if}
 		</main>
 	{/if}
 </div>

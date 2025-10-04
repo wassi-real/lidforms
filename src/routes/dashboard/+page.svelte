@@ -80,17 +80,17 @@
 <div class="min-h-screen bg-white">
 	<!-- Header -->
 	<header class="bg-white border-b-2 border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-		<div class="container mx-auto px-4 py-4">
+		<div class="container mx-auto px-4 py-3 md:py-4">
 			<div class="flex items-center justify-between">
-				<a href="/dashboard" class="flex items-center gap-3 group">
-					<img src="/Logo (1).png" alt="LidForm" class="w-11 h-11 transition-transform group-hover:scale-105" />
-					<span class="text-2xl font-bold text-gray-900">LidForm</span>
+				<a href="/dashboard" class="flex items-center gap-2 md:gap-3 group">
+					<img src="/Logo (1).png" alt="LidForm" class="w-8 h-8 md:w-11 md:h-11 transition-transform group-hover:scale-105" />
+					<span class="text-xl md:text-2xl font-bold text-gray-900">LidForm</span>
 				</a>
-				<div class="flex items-center gap-4">
-					<span class="text-gray-600 hidden md:block">{data.user?.email}</span>
+				<div class="flex items-center gap-2 md:gap-4">
+					<span class="text-gray-600 hidden md:block text-sm">{data.user?.email}</span>
 					<a
 						href="/dashboard/settings"
-						class="px-5 py-2.5 border-2 border-gray-900 text-gray-900 font-semibold rounded-xl hover:bg-gray-900 hover:text-white transition-all"
+						class="px-3 py-2 md:px-5 md:py-2.5 border-2 border-gray-900 text-gray-900 text-sm md:text-base font-semibold rounded-xl hover:bg-gray-900 hover:text-white transition-all"
 					>
 						Settings
 					</a>
@@ -100,15 +100,15 @@
 	</header>
 
 	<!-- Main Content -->
-	<main class="container mx-auto px-4 py-12">
-		<div class="mb-12 flex items-center justify-between animate-fade-in-up">
+	<main class="container mx-auto px-4 py-6 md:py-12">
+		<div class="mb-8 md:mb-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-fade-in-up">
 			<div>
-				<h1 class="text-5xl font-extrabold text-gray-900 mb-3">My Forms</h1>
-				<p class="text-gray-600 text-lg">Create and manage your forms</p>
+				<h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-2 md:mb-3">My Forms</h1>
+				<p class="text-gray-600 text-base md:text-lg">Create and manage your forms</p>
 			</div>
 			<button
 				onclick={createNewForm}
-				class="px-8 py-4 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all shadow-2xl hover:shadow-3xl hover:-translate-y-1 flex items-center gap-2"
+				class="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all shadow-2xl hover:shadow-3xl hover:-translate-y-1 flex items-center justify-center gap-2"
 			>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -123,56 +123,56 @@
 				<p class="text-gray-600 mt-6 text-lg">Loading forms...</p>
 			</div>
 		{:else if forms.length === 0}
-			<div class="bg-white rounded-3xl border-2 border-gray-200 p-16 text-center animate-fade-in">
-				<div class="w-24 h-24 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-8">
-					<svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<div class="bg-white rounded-3xl border-2 border-gray-200 p-8 md:p-16 text-center animate-fade-in">
+				<div class="w-16 h-16 md:w-24 md:h-24 bg-gray-100 rounded-3xl flex items-center justify-center mx-auto mb-6 md:mb-8">
+					<svg class="w-8 h-8 md:w-12 md:h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
 					</svg>
 				</div>
-				<h2 class="text-3xl font-bold text-gray-900 mb-3">No forms yet</h2>
-				<p class="text-gray-600 mb-8 text-lg">Create your first form to start collecting responses</p>
+				<h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-3">No forms yet</h2>
+				<p class="text-gray-600 mb-6 md:mb-8 text-base md:text-lg">Create your first form to start collecting responses</p>
 				<button
 					onclick={createNewForm}
-					class="px-10 py-4 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all hover:-translate-y-1 shadow-2xl"
+					class="w-full md:w-auto px-8 md:px-10 py-3 md:py-4 bg-black text-white font-bold rounded-2xl hover:bg-gray-800 transition-all hover:-translate-y-1 shadow-2xl"
 				>
 					Create Your First Form
 				</button>
 			</div>
 		{:else}
-			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
 				{#each forms as form, index (form.id)}
 					<div 
-						class="group bg-white rounded-3xl border-2 border-gray-200 hover:border-black transition-all duration-300 p-8 hover:-translate-y-2 hover:shadow-2xl animate-fade-in-up"
+						class="group bg-white rounded-3xl border-2 border-gray-200 hover:border-black transition-all duration-300 p-6 md:p-8 hover:-translate-y-2 hover:shadow-2xl animate-fade-in-up"
 						style="animation-delay: {index * 0.1}s;"
 					>
-						<div class="flex items-start justify-between mb-6">
-							<div class="flex-1">
-								<h3 class="text-2xl font-bold text-gray-900 mb-2 group-hover:text-black transition-colors">{form.title}</h3>
-								<p class="text-sm text-gray-500">
+						<div class="flex items-start justify-between mb-4 md:mb-6">
+							<div class="flex-1 min-w-0">
+								<h3 class="text-xl md:text-2xl font-bold text-gray-900 mb-2 group-hover:text-black transition-colors truncate">{form.title}</h3>
+								<p class="text-xs md:text-sm text-gray-500">
 									{new Date(form.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
 								</p>
 							</div>
-							<span class="px-3 py-1.5 text-xs font-bold rounded-full {form.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+							<span class="px-2 md:px-3 py-1 md:py-1.5 text-xs font-bold rounded-full whitespace-nowrap ml-2 {form.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
 								{form.is_active ? 'Active' : 'Inactive'}
 							</span>
 						</div>
 
 						{#if form.description}
-							<p class="text-gray-600 mb-6 line-clamp-2 leading-relaxed">{form.description}</p>
+							<p class="text-gray-600 mb-4 md:mb-6 line-clamp-2 leading-relaxed text-sm md:text-base">{form.description}</p>
 						{:else}
-							<p class="text-gray-400 mb-6 italic">No description</p>
+							<p class="text-gray-400 mb-4 md:mb-6 italic text-sm md:text-base">No description</p>
 						{/if}
 
-						<div class="flex gap-3">
+						<div class="flex flex-col sm:flex-row gap-2 md:gap-3">
 							<a
 								href="/dashboard/forms/{form.id}/edit"
-								class="flex-1 px-4 py-3 bg-black text-white text-center font-semibold rounded-xl hover:bg-gray-800 transition-all"
+								class="flex-1 px-4 py-2.5 md:py-3 bg-black text-white text-center text-sm md:text-base font-semibold rounded-xl hover:bg-gray-800 transition-all"
 							>
 								Edit
 							</a>
 							<a
 								href="/dashboard/forms/{form.id}"
-								class="flex-1 px-4 py-3 border-2 border-gray-900 text-gray-900 text-center font-semibold rounded-xl hover:bg-gray-900 hover:text-white transition-all"
+								class="flex-1 px-4 py-2.5 md:py-3 border-2 border-gray-900 text-gray-900 text-center text-sm md:text-base font-semibold rounded-xl hover:bg-gray-900 hover:text-white transition-all"
 							>
 								View
 							</a>
@@ -182,12 +182,13 @@
 										deleteForm(form.id, form.title);
 									}
 								}}
-								class="px-4 py-3 border-2 border-red-500 text-red-600 font-semibold rounded-xl hover:bg-red-500 hover:text-white transition-all"
+								class="sm:w-auto px-4 py-2.5 md:py-3 border-2 border-red-500 text-red-600 text-sm md:text-base font-semibold rounded-xl hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2"
 								title="Delete form"
 							>
 								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
 								</svg>
+								<span class="sm:hidden">Delete</span>
 							</button>
 						</div>
 					</div>
