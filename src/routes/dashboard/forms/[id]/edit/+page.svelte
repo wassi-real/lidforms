@@ -36,16 +36,17 @@
 		loading = true;
 		const formId = $page.params.id;
 
-		// Load form
+		// Load form - ONLY if user owns it
 		const { data: formData, error: formError } = await data.supabase
 			.from('forms')
 			.select('*')
 			.eq('id', formId)
+			.eq('user_id', data.user?.id)
 			.single();
 
 		if (formError) {
 			console.error('Error loading form:', formError);
-			showToast('Failed to load form: ' + formError.message, 'error');
+			showToast('Failed to load form - Access denied', 'error');
 			goto('/dashboard');
 			return;
 		}

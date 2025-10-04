@@ -27,6 +27,7 @@
 		const { data: formsData, error } = await data.supabase
 			.from('forms')
 			.select('*')
+			.eq('user_id', data.user?.id)
 			.order('created_at', { ascending: false });
 
 		if (error) {
