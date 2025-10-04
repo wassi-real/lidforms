@@ -1,16 +1,17 @@
 <script lang="ts">
-	import type { PageData } from './$types';
+	import type { PageData, ActionData } from './$types';
 	import { onMount } from 'svelte';
+	import { enhance } from '$app/forms';
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	let form = $state<any>(null);
+	let formData = $state<any>(null);
 	let fields = $state<any[]>([]);
 	let loading = $state(true);
 	let submitting = $state(false);
 	let submitted = $state(false);
 	let error = $state('');
-	let formData = $state<Record<string, any>>({});
+	let formFields = $state<Record<string, any>>({});
 
 	onMount(async () => {
 		await loadForm();
@@ -18,86 +19,27 @@
 
 	async function loadForm() {
 		loading = true;
-		const { data: formData, error: formError } = await data.supabase
-			.from('forms')
-			.select('*')
-			.eq('id', data.formId)
-			.eq('is_active', true)
-			.single();
+		// Fetch form data from server using service role key
+		try {
+			const response = await fetch(`/api/forms/${data.formId}`);
+			const result = await response.json();
+			
+			if (!response.ok || result.error) {
+				error = 'Form not found or is no longer accepting responses';
+				loading = false;
+				return;
+			}
 
-		if (formError || !formData) {
-			error = 'Form not found or is no longer accepting responses';
+			formData = result.form;
+			fields = result.fields || [];
 			loading = false;
-			return;
+		} catch (err) {
+			console.error('Load form error:', err);
+			error = 'Failed to load form. Please try again.';
+			loading = false;
 		}
-
-		form = formData;
-
-		const { data: fieldsData } = await data.supabase
-			.from('form_fields')
-			.select('*')
-			.eq('form_id', data.formId)
-			.order('position', { ascending: true });
-
-		fields = fieldsData || [];
-		loading = false;
 	}
 
-	async function handleSubmit(event: Event) {
-		event.preventDefault();
-		if (submitting) return;
-
-		error = '';
-		submitting = true;
-
-		// Validate required fields
-		for (const field of fields) {
-			if (field.required && !formData[field.id]) {
-				error = `Please fill in the required field: ${field.label}`;
-				submitting = false;
-				return;
-			}
-		}
-
-		// Create submission
-		const { data: submission, error: submissionError } = await data.supabase
-			.from('submissions')
-			.insert({
-				form_id: form.id
-			})
-			.select()
-			.single();
-
-		if (submissionError) {
-			error = 'Failed to submit form. Please try again.';
-			submitting = false;
-			return;
-		}
-
-		// Create responses
-		const responses = fields
-			.filter(field => formData[field.id])
-			.map(field => ({
-				submission_id: submission.id,
-				field_id: field.id,
-				value: String(formData[field.id])
-			}));
-
-		if (responses.length > 0) {
-			const { error: responsesError } = await data.supabase
-				.from('submission_responses')
-				.insert(responses);
-
-			if (responsesError) {
-				error = 'Failed to submit form. Please try again.';
-				submitting = false;
-				return;
-			}
-		}
-
-		submitting = false;
-		submitted = true;
-	}
 </script>
 
 <svelte:head>
@@ -130,18 +72,18 @@
 					</svg>
 				</div>
 				<h1 class="text-4xl font-extrabold text-gray-900 mb-4">
-					{form?.thank_you_message || 'Thank you for your submission!'}
+					{formData?.thank_you_message || 'Thank you for your submission!'}
 				</h1>
 				<p class="text-gray-600 text-lg">Your response has been recorded successfully.</p>
 			</div>
-		{:else if form}
+		{:else if formData}
 			<div class="max-w-2xl mx-auto">
 				<div class="bg-white rounded-3xl border-2 border-gray-200 p-10 md:p-14 shadow-2xl animate-fade-in">
 					<!-- Form Header -->
 					<div class="mb-10">
-						<h1 class="text-4xl font-extrabold text-gray-900 mb-3">{form.title}</h1>
-						{#if form.description}
-							<p class="text-gray-600 text-lg leading-relaxed">{form.description}</p>
+						<h1 class="text-4xl font-extrabold text-gray-900 mb-3">{formData.title}</h1>
+						{#if formData.description}
+							<p class="text-gray-600 text-lg leading-relaxed">{formData.description}</p>
 						{/if}
 					</div>
 
@@ -152,7 +94,20 @@
 					{/if}
 
 					<!-- Form Fields -->
-					<form onsubmit={handleSubmit} class="space-y-6">
+					<form method="POST" action="?/submit" use:enhance={() => {
+						submitting = true;
+						error = '';
+						return async ({ result }) => {
+							submitting = false;
+							if (result.type === 'success') {
+								submitted = true;
+							} else if (result.type === 'failure') {
+								error = (result.data as any)?.error || 'Failed to submit form. Please try again.';
+							} else {
+								error = 'Failed to submit form. Please try again.';
+							}
+						};
+					}} class="space-y-6">
 						{#each fields as field, index (field.id)}
 							<div class="animate-fade-in-up" style="animation-delay: {index * 0.05}s;">
 								<label for={field.id} class="block text-sm font-bold text-gray-900 mb-3">
@@ -165,8 +120,9 @@
 								{#if field.field_type === 'text'}
 									<input
 										id={field.id}
+										name={field.id}
 										type="text"
-										bind:value={formData[field.id]}
+										bind:value={formFields[field.id]}
 										required={field.required}
 										placeholder={field.placeholder}
 										class="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
@@ -174,8 +130,9 @@
 								{:else if field.field_type === 'email'}
 									<input
 										id={field.id}
+										name={field.id}
 										type="email"
-										bind:value={formData[field.id]}
+										bind:value={formFields[field.id]}
 										required={field.required}
 										placeholder={field.placeholder}
 										class="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
@@ -183,8 +140,9 @@
 								{:else if field.field_type === 'phone'}
 									<input
 										id={field.id}
+										name={field.id}
 										type="tel"
-										bind:value={formData[field.id]}
+										bind:value={formFields[field.id]}
 										required={field.required}
 										placeholder={field.placeholder}
 										class="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
@@ -192,7 +150,8 @@
 								{:else if field.field_type === 'dropdown' && field.options}
 									<select
 										id={field.id}
-										bind:value={formData[field.id]}
+										name={field.id}
+										bind:value={formFields[field.id]}
 										required={field.required}
 										class="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-black focus:border-black transition-all text-lg"
 									>
@@ -279,3 +238,4 @@
 		animation: scale-in 0.5s ease-out;
 	}
 </style>
+
