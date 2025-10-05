@@ -35,7 +35,39 @@
 				<img src="/Logo (1).png" alt="LidForm" class="w-11 h-11 transition-transform group-hover:scale-105" />
 				<span class="text-2xl font-bold text-gray-900">LidForm</span>
 			</a>
+			
 			<div class="flex items-center gap-3">
+				<!-- Navigation Links -->
+				<div class="hidden md:flex items-center gap-2">
+					<a 
+						href="#features" 
+						class="px-4 py-2.5 font-semibold transition-all rounded-lg scroll-smooth text-gray-600 hover:text-gray-900 hover:bg-slate-100 flex items-center gap-2"
+					>
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+						</svg>
+						Features
+					</a>
+					<a 
+						href="#pricing" 
+						class="px-4 py-2.5 font-semibold transition-all rounded-lg scroll-smooth text-gray-600 hover:text-gray-900 hover:bg-slate-100 flex items-center gap-2"
+					>
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+						</svg>
+						Pricing
+					</a>
+					<a 
+						href="#faq" 
+						class="px-4 py-2.5 font-semibold transition-all rounded-lg scroll-smooth text-gray-600 hover:text-gray-900 hover:bg-slate-100 flex items-center gap-2"
+					>
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+						FAQ
+					</a>
+				</div>
+				
 				{#if data.session}
 					<a
 						href="/dashboard"
@@ -73,7 +105,7 @@
 			</h1>
 			<p class="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto animate-fade-in-up" style="animation-delay: 0.1s;">
 				Build beautiful forms, collect responses, and export data. No coding required. Perfect for
-				feedback, surveys, contact forms, and more.
+				feedback & contact forms.
 			</p>
 			<button
 				onclick={handleGetStarted}
@@ -88,8 +120,49 @@
 		</div>
 	</section>
 
+	<!-- Trusted By Section -->
+	<section class="py-16 md:py-20 bg-white border-b border-gray-100">
+		<div class="container mx-auto px-4">
+			<div class="text-center mb-12">
+				<p class="text-gray-500 text-sm font-semibold uppercase tracking-wider mb-8">Trusted by developers worldwide</p>
+				<h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Built with the best tools</h2>
+				<p class="text-gray-600 max-w-2xl mx-auto">
+					LidForm is powered by industry-leading technologies that ensure reliability, performance, and security.
+				</p>
+			</div>
+
+			<div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 items-center justify-items-center max-w-4xl mx-auto">
+				<!-- Svelte -->
+				<div class="group flex items-center justify-center p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+					<img src="/trustedby/svelte.webp" alt="Svelte" class="h-8 md:h-10 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300" />
+				</div>
+
+				<!-- Supabase -->
+				<div class="group flex items-center justify-center p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+					<img src="/trustedby/supabase.jpg" alt="Supabase" class="h-8 md:h-10 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300" />
+				</div>
+
+				<!-- Vercel -->
+				<div class="group flex items-center justify-center p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+					<img src="/trustedby/vercel.webp" alt="Vercel" class="h-8 md:h-10 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300" />
+				</div>
+
+				<!-- PD -->
+				<div class="group flex items-center justify-center p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+					<img src="/trustedby/pd.png" alt="PD" class="h-8 md:h-10 w-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-300" />
+				</div>
+			</div>
+
+			<!-- <div class="text-center mt-8">
+				<p class="text-gray-400 text-sm">
+					Trusted by thousands of developers building the future of web applications
+				</p>
+			</div> -->
+		</div>
+	</section>
+
 	<!-- Features Section -->
-	<section class="bg-gray-50 py-20 md:py-32">
+	<section id="features" class="bg-gray-50 py-20 md:py-32">
 		<div class="container mx-auto px-4">
 			<div class="text-center mb-16">
 				<h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
@@ -157,7 +230,7 @@
 	</section>
 
 	<!-- Pricing Section -->
-	<section class="py-20 md:py-32">
+	<section id="pricing" class="py-20 md:py-32">
 		<div class="container mx-auto px-4">
 			<div class="text-center mb-16">
 				<h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
@@ -235,7 +308,7 @@
 	</section>
 
 	<!-- FAQ Section -->
-	<section class="bg-gray-50 py-20 md:py-32">
+	<section id="faq" class="bg-gray-50 py-20 md:py-32">
 		<div class="container mx-auto px-4">
 			<div class="text-center mb-16">
 				<h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
@@ -396,6 +469,10 @@
 </div>
 
 <style>
+	:global(html) {
+		scroll-behavior: smooth;
+	}
+
 	@keyframes fade-in {
 		from {
 			opacity: 0;
