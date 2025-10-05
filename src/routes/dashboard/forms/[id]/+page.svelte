@@ -4,8 +4,13 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import { createBrowserClient } from '@supabase/ssr';
+	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 	let { data }: { data: PageData } = $props();
+	
+	// Create supabase client for this page
+	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 	let form = $state<any>(null);
 	let fields = $state<any[]>([]);
@@ -29,12 +34,24 @@
 		loading = true;
 		const formId = $page.params.id;
 
+		// Debug: Check if user data is available
+		console.log('Loading form data - User data:', data.user);
+		console.log('Loading form data - User ID:', data.user?.id);
+		console.log('Loading form data - Form ID:', formId);
+
+		if (!data.user?.id) {
+			console.error('No user ID available for form data loading');
+			showToast('Authentication error - please log in again', 'error');
+			goto('/dashboard');
+			return;
+		}
+
 		// Load form - ONLY if user owns it
-		const { data: formData, error: formError } = await data.supabase
+		const { data: formData, error: formError } = await supabase
 			.from('forms')
 			.select('*')
 			.eq('id', formId)
-			.eq('user_id', data.user?.id)
+			.eq('user_id', data.user.id)
 			.single();
 
 		if (formError) {
@@ -47,7 +64,7 @@
 		form = formData;
 
 		// Load fields
-		const { data: fieldsData } = await data.supabase
+		const { data: fieldsData } = await supabase
 			.from('form_fields')
 			.select('*')
 			.eq('form_id', formId)
@@ -56,7 +73,7 @@
 		fields = fieldsData || [];
 
 		// Load submissions with responses
-		const { data: submissionsData } = await data.supabase
+		const { data: submissionsData } = await supabase
 			.from('submissions')
 			.select(`
 				id,
@@ -163,7 +180,7 @@
 	}
 
 	async function deleteSubmission(submissionId: string) {
-		const { error } = await data.supabase
+		const { error } = await supabase
 			.from('submissions')
 			.delete()
 			.eq('id', submissionId);

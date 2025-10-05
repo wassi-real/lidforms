@@ -4,8 +4,13 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import { createBrowserClient } from '@supabase/ssr';
+	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 	let { data }: { data: PageData } = $props();
+	
+	// Create supabase client for this page
+	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 	let form = $state<any>(null);
 	let fields = $state<any[]>([]);
@@ -37,12 +42,24 @@
 		loading = true;
 		const formId = $page.params.id;
 
+		// Debug: Check if user data is available
+		console.log('Loading form - User data:', data.user);
+		console.log('Loading form - User ID:', data.user?.id);
+		console.log('Loading form - Form ID:', formId);
+
+		if (!data.user?.id) {
+			console.error('No user ID available for form loading');
+			showToast('Authentication error - please log in again', 'error');
+			goto('/dashboard');
+			return;
+		}
+
 		// Load form - ONLY if user owns it
-		const { data: formData, error: formError } = await data.supabase
+		const { data: formData, error: formError } = await supabase
 			.from('forms')
 			.select('*')
 			.eq('id', formId)
-			.eq('user_id', data.user?.id)
+			.eq('user_id', data.user.id)
 			.single();
 
 		if (formError) {
@@ -55,7 +72,7 @@
 		form = formData;
 
 		// Load fields
-		const { data: fieldsData, error: fieldsError } = await data.supabase
+		const { data: fieldsData, error: fieldsError } = await supabase
 			.from('form_fields')
 			.select('*')
 			.eq('form_id', formId)
@@ -80,7 +97,7 @@
 
 		try {
 			// Update form
-			const { error: formError } = await data.supabase
+			const { error: formError } = await supabase
 				.from('forms')
 				.update({
 					title: form.title,
@@ -98,7 +115,7 @@
 			}
 
 			// Delete all existing fields
-			const { error: deleteError } = await data.supabase
+			const { error: deleteError } = await supabase
 				.from('form_fields')
 				.delete()
 				.eq('form_id', form.id);
@@ -119,7 +136,7 @@
 					position: index
 				}));
 
-				const { error: fieldsError } = await data.supabase
+				const { error: fieldsError } = await supabase
 					.from('form_fields')
 					.insert(fieldsToInsert);
 

@@ -3,8 +3,13 @@
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
 	import Toast from '$lib/components/Toast.svelte';
+	import { createBrowserClient } from '@supabase/ssr';
+	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 	let { data }: { data: PageData } = $props();
+	
+	// Create supabase client for this page
+	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 	let forms = $state<any[]>([]);
 	let loading = $state(true);
@@ -24,10 +29,22 @@
 
 	async function loadForms() {
 		loading = true;
-		const { data: formsData, error } = await data.supabase
+		
+		// Debug: Check if user data is available
+		console.log('Loading forms - User data:', data.user);
+		console.log('Loading forms - User ID:', data.user?.id);
+
+		if (!data.user?.id) {
+			console.error('No user ID available for loading forms');
+			showToast('Authentication error - please log in again', 'error');
+			loading = false;
+			return;
+		}
+
+		const { data: formsData, error } = await supabase
 			.from('forms')
 			.select('*')
-			.eq('user_id', data.user?.id)
+			.eq('user_id', data.user.id)
 			.order('created_at', { ascending: false });
 
 		if (error) {
@@ -40,12 +57,22 @@
 	}
 
 	async function createNewForm() {
-		const { data: newForm, error } = await data.supabase
+		// Debug: Check if user data is available
+		console.log('User data:', data.user);
+		console.log('User ID:', data.user?.id);
+		
+		if (!data.user?.id) {
+			console.error('No user ID available');
+			showToast('Authentication error - please log in again', 'error');
+			return;
+		}
+
+		const { data: newForm, error } = await supabase
 			.from('forms')
 			.insert({
 				title: 'Untitled Form',
 				description: '',
-				user_id: data.user?.id
+				user_id: data.user.id
 			})
 			.select()
 			.single();
@@ -60,7 +87,7 @@
 	}
 
 	async function deleteForm(formId: string, formTitle: string) {
-		const { error } = await data.supabase.from('forms').delete().eq('id', formId);
+		const { error } = await supabase.from('forms').delete().eq('id', formId);
 
 		if (error) {
 			console.error('Error deleting form:', error);

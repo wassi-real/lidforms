@@ -5,31 +5,26 @@ import type { LayoutLoad } from './$types';
 export const load: LayoutLoad = async ({ data, depends, fetch }) => {
 	depends('supabase:auth');
 
-	const supabase = isBrowser()
-		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-				global: {
-					fetch
-				}
-			})
-		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-				global: {
-					fetch
-				},
-				cookies: {
-					getAll() {
-						return data.cookies;
-					}
-				}
-			});
+	// Only create supabase client on browser side
+	if (isBrowser()) {
+		const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+			global: {
+				fetch
+			}
+		});
 
-	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
 
-	const {
-		data: { user }
-	} = await supabase.auth.getUser();
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
 
-	return { supabase, session, user };
+		return { supabase, session, user };
+	}
+
+	// On server side, don't return supabase client to avoid serialization
+	return { session: null, user: null };
 };
 
